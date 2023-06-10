@@ -52,7 +52,8 @@ public class ReservationManagerImpl implements ReservationManager {
         return availableTables;
     }
 
-    private List<TableHourODTO> getTablesFreeByHour(List<RestaurantTableODTO> allRestaurantTable, List<ReservationIntegrationIDTO> reservations) {
+    private List<TableHourODTO> getTablesFreeByHour(List<RestaurantTableODTO> allRestaurantTable,
+                                                    List<ReservationIntegrationIDTO> reservations) {
         return allRestaurantTable
                 .stream()
                 .map(table -> buildAvailableTable(reservations, table))
