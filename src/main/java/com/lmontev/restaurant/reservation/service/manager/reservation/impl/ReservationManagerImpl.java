@@ -7,6 +7,7 @@ import com.lmontev.restaurant.reservation.service.integration.reservation.Reserv
 import com.lmontev.restaurant.reservation.service.integration.reservation.dto.input.ReservationIntegrationIDTO;
 import com.lmontev.restaurant.reservation.service.integration.table.RestaurantTableIntegration;
 import com.lmontev.restaurant.reservation.service.integration.table.dto.output.RestaurantTableODTO;
+import com.lmontev.restaurant.reservation.service.manager.hours.HoursManager;
 import com.lmontev.restaurant.reservation.service.manager.reservation.ReservationManager;
 import com.lmontev.restaurant.reservation.service.manager.reservation.dto.output.AvailableTablesODTO;
 import com.lmontev.restaurant.reservation.service.manager.reservation.dto.output.ReservationODTO;
@@ -26,12 +27,11 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationManagerImpl implements ReservationManager {
 
-    private static final List<LocalTime> POSSIBLE_HOURS = Arrays.asList(LocalTime.of(13, 0),
-            LocalTime.of(14, 0), LocalTime.of(15, 0),
-            LocalTime.of(16, 0), LocalTime.of(20, 0),
-            LocalTime.of(21, 0), LocalTime.of(22, 0));
     @Autowired
     private RestaurantTableIntegration tablesIntegration;
+
+    @Autowired
+    private HoursManager hoursManager;
 
     @Autowired
     private ReservationIntegration reservationIntegration;
@@ -109,7 +109,7 @@ public class ReservationManagerImpl implements ReservationManager {
     private TableHourODTO buildAvailableTable(List<ReservationIntegrationIDTO> reservations, RestaurantTableODTO table) {
         final TableHourODTO tableHourODTO = new TableHourODTO();
         tableHourODTO.setTable(table);
-        final List<LocalTime> hours = POSSIBLE_HOURS
+        final List<LocalTime> hours = hoursManager.getAllAvailableHours()
                 .stream()
                 .filter(hour -> isAvailabe(reservations, hour, table))
                 .collect(Collectors.toList());
