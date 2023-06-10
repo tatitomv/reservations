@@ -21,4 +21,6 @@ public class ReservationMO {
     private LocalTime time;
     @ManyToOne(optional = false, cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private RestaurantTableMO tableMO;
+    private String contact;
+    private String email;
 }

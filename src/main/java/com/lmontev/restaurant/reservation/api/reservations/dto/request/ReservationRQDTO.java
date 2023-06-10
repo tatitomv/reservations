@@ -11,4 +11,6 @@ public class ReservationRQDTO {
     private Long quantity;
     private LocalDate date;
     private LocalTime time;
+    private String contact;
+    private String email;
 }
