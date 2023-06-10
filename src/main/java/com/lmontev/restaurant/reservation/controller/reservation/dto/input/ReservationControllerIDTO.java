@@ -13,4 +13,6 @@ public class ReservationControllerIDTO {
     private LocalDate date;
     private LocalTime time;
     private RestaurantTableIDTO table;
+    private String contact;
+    private String email;
 }

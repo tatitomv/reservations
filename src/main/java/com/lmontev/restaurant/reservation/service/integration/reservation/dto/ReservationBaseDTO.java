@@ -14,4 +14,6 @@ public class ReservationBaseDTO {
     private Long quantity;
     private Long tableId;
     private Long maxDiners;
+    private String contact;
+    private String email;
 }

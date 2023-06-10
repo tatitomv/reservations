@@ -14,4 +14,6 @@ public class ReservationODTO {
     private LocalDate date;
     private LocalTime time;
     private RestaurantTableODTO table;
+    private String contact;
+    private String email;
 }
