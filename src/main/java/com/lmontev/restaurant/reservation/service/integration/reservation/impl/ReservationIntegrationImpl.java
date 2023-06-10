@@ -2,6 +2,7 @@ package com.lmontev.restaurant.reservation.service.integration.reservation.impl;
 
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.ReservationControllerIDTO;
 import com.lmontev.restaurant.reservation.entities.reservation.ReservationMO;
+import com.lmontev.restaurant.reservation.exception.handler.error.NotFoundCustomException;
 import com.lmontev.restaurant.reservation.repositories.reservation.ReservationRepository;
 import com.lmontev.restaurant.reservation.service.integration.reservation.ReservationIntegration;
 import com.lmontev.restaurant.reservation.service.integration.reservation.dto.input.ReservationIntegrationIDTO;
@@ -58,7 +59,7 @@ public class ReservationIntegrationImpl implements ReservationIntegration {
     public ReservationIntegrationIDTO findReservationById(Long id) {
         Optional<ReservationMO> reservationMO = repository.findById(id);
         if(!reservationMO.isPresent()){
-            throw new RuntimeException("No existe la reservacion");
+            throw new NotFoundCustomException("No existe la reservacion");
         }
         return transformer.toIDTO(reservationMO.get());
     }
@@ -68,7 +69,7 @@ public class ReservationIntegrationImpl implements ReservationIntegration {
         final Optional<ReservationMO> optionalReservationMO = repository
                 .findById(reservationControllerIDTO.getId());
         if (!optionalReservationMO.isPresent()){
-            throw new RuntimeException("No existe la reserva");
+            throw new NotFoundCustomException("No existe la reserva");
         }
         final ReservationMO reservationMO = transformer.toReservationMO(reservationControllerIDTO);
         final ReservationMO reservationEdited = repository.save(reservationMO);
