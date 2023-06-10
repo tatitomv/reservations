@@ -3,6 +3,7 @@ package com.lmontev.restaurant.reservation.service.manager.reservation.impl;
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.AvailableTablesIDTO;
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.ReservationControllerIDTO;
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.ReservationsByDateIDTO;
+import com.lmontev.restaurant.reservation.exception.handler.error.NotAvailableTableException;
 import com.lmontev.restaurant.reservation.service.integration.reservation.ReservationIntegration;
 import com.lmontev.restaurant.reservation.service.integration.reservation.dto.input.ReservationIntegrationIDTO;
 import com.lmontev.restaurant.reservation.service.integration.table.RestaurantTableIntegration;
@@ -101,7 +102,7 @@ public class ReservationManagerImpl implements ReservationManager {
                 .filter(table -> table.getHours().contains(reservationControllerIDTO.getTime()))
                 .findFirst();
         if (!tableHourODTO.isPresent()){
-            throw new RuntimeException("No hay mesas dispobibles");
+            throw new NotAvailableTableException("No hay mesas dispobibles");
         }
         return tableHourODTO.get().getTable();
     }

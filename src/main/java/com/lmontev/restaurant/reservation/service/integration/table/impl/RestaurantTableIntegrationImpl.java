@@ -1,6 +1,8 @@
 package com.lmontev.restaurant.reservation.service.integration.table.impl;
 
 import com.lmontev.restaurant.reservation.entities.table.RestaurantTableMO;
+import com.lmontev.restaurant.reservation.exception.handler.error.BadRequestCustomException;
+import com.lmontev.restaurant.reservation.exception.handler.error.NotFoundCustomException;
 import com.lmontev.restaurant.reservation.repositories.table.RestaurantTableRepository;
 import com.lmontev.restaurant.reservation.service.integration.table.RestaurantTableIntegration;
 import com.lmontev.restaurant.reservation.service.integration.table.dto.input.RestaurantTableIDTO;
@@ -28,7 +30,7 @@ public class RestaurantTableIntegrationImpl implements RestaurantTableIntegratio
     public RestaurantTableODTO findTableById(Long id) {
         Optional<RestaurantTableMO> table = repository.findById(id);
         if (!table.isPresent()){
-            throw new RuntimeException("no existe la tabla");
+            throw new NotFoundCustomException("no existe la tabla");
         }
         return transformer.toRestaurantTableODTO(table.get());
     }
@@ -44,7 +46,7 @@ public class RestaurantTableIntegrationImpl implements RestaurantTableIntegratio
     @Override
     public RestaurantTableODTO addTable(RestaurantTableIDTO idto) {
         if(Objects.isNull(idto.getMaxDiners())){
-            throw new RuntimeException("debes editar la mesa");
+            throw new BadRequestCustomException("debes editar la mesa");
         }
         final RestaurantTableMO newTable = repository.save(transformer.toRestaurantTableMO(idto));
         return transformer.toRestaurantTableODTO(newTable);
@@ -53,11 +55,11 @@ public class RestaurantTableIntegrationImpl implements RestaurantTableIntegratio
     @Override
     public RestaurantTableODTO editTable(RestaurantTableIDTO idto) {
         if(Objects.isNull(idto.getId())){
-            throw new RuntimeException("debes crear la mesa");
+            throw new BadRequestCustomException("debes crear la mesa");
         }
         final Optional<RestaurantTableMO> tableMO = repository.findById(idto.getId());
         if (!tableMO.isPresent()){
-            throw new RuntimeException("no existe ninguna tabla con ese id");
+            throw new NotFoundCustomException("no existe ninguna tabla con ese id");
         }
         final RestaurantTableMO editedTableMO = repository.save(transformer.toRestaurantTableMO(idto));
         return transformer.toRestaurantTableODTO(editedTableMO);

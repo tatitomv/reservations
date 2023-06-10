@@ -1,6 +1,8 @@
 package com.lmontev.restaurant.reservation.service.integration.hours.impl;
 
 import com.lmontev.restaurant.reservation.entities.hours.HoursMO;
+import com.lmontev.restaurant.reservation.exception.handler.error.BadRequestCustomException;
+import com.lmontev.restaurant.reservation.exception.handler.error.NotFoundCustomException;
 import com.lmontev.restaurant.reservation.repositories.hours.HoursRepository;
 import com.lmontev.restaurant.reservation.service.integration.hours.HoursIntegration;
 import com.lmontev.restaurant.reservation.service.integration.hours.dto.input.HourIntegrationIDTO;
@@ -33,7 +35,7 @@ public class HoursIntegrationImpl implements HoursIntegration {
     public HourIntegrationIDTO addHour(LocalTime hour) {
         final List<HoursMO> hours = repository.findByHour(hour);
         if(!hours.isEmpty()){
-            throw new RuntimeException("Ya esta creado ese horario");
+            throw new BadRequestCustomException("Ya esta creado ese horario");
         }
         final HoursMO hoursMO = repository.save(transformer.toHoursMO(hour));
         return transformer.toIDTO(hoursMO);
@@ -43,7 +45,7 @@ public class HoursIntegrationImpl implements HoursIntegration {
     public void deleteHour(LocalTime hour) {
         List<HoursMO> hours = repository.findByHour(hour);
         if(hours.isEmpty()){
-            throw new RuntimeException("No existe ese horario");
+            throw new NotFoundCustomException("No existe ese horario");
         }
         hours.forEach(hourMO -> repository.delete(hourMO));
     }
