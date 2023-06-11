@@ -6,7 +6,7 @@ import com.lmontev.restaurant.reservation.service.integration.table.dto.output.R
 import org.mapstruct.Mapper;
 
 @Mapper
-public interface RestaurantTabeIntegrationMapper {
+public interface RestaurantTableIntegrationMapper {
 
     RestaurantTableODTO toRestaurantTableODTO(RestaurantTableMO restaurant);
 
