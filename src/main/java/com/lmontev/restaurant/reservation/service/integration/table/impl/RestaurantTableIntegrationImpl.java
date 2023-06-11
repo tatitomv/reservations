@@ -46,7 +46,7 @@ public class RestaurantTableIntegrationImpl implements RestaurantTableIntegratio
     @Override
     public RestaurantTableODTO addTable(RestaurantTableIDTO idto) {
         if(Objects.isNull(idto.getMaxDiners())){
-            throw new BadRequestCustomException("debes editar la mesa");
+            throw new BadRequestCustomException("no se puede crear mesa sin info");
         }
         final RestaurantTableMO newTable = repository.save(transformer.toRestaurantTableMO(idto));
         return transformer.toRestaurantTableODTO(newTable);

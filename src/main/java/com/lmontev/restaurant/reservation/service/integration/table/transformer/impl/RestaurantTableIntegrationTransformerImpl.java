@@ -4,7 +4,7 @@ import com.lmontev.restaurant.reservation.entities.table.RestaurantTableMO;
 import com.lmontev.restaurant.reservation.service.integration.table.dto.input.RestaurantTableIDTO;
 import com.lmontev.restaurant.reservation.service.integration.table.dto.output.RestaurantTableODTO;
 import com.lmontev.restaurant.reservation.service.integration.table.transformer.RestaurantTableIntegrationTransformer;
-import com.lmontev.restaurant.reservation.service.integration.table.transformer.impl.mapper.RestaurantTabeIntegrationMapper;
+import com.lmontev.restaurant.reservation.service.integration.table.transformer.impl.mapper.RestaurantTableIntegrationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class RestaurantTableIntegrationTransformerImpl implements RestaurantTableIntegrationTransformer {
 
     @Autowired
-    private RestaurantTabeIntegrationMapper mapper;
+    private RestaurantTableIntegrationMapper mapper;
     @Override
     public RestaurantTableODTO toRestaurantTableODTO(RestaurantTableMO table) {
         return mapper.toRestaurantTableODTO(table);

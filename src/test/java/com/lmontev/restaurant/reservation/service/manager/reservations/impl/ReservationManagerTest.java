@@ -2,6 +2,7 @@ package com.lmontev.restaurant.reservation.service.manager.reservations.impl;
 
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.AvailableTablesIDTO;
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.ReservationControllerIDTO;
+import com.lmontev.restaurant.reservation.controller.reservation.dto.input.ReservationsByDateIDTO;
 import com.lmontev.restaurant.reservation.controller.reservation.dto.input.RestaurantTableIDTO;
 import com.lmontev.restaurant.reservation.exception.handler.error.NotAvailableTableException;
 import com.lmontev.restaurant.reservation.service.integration.reservation.ReservationIntegration;
@@ -14,9 +15,7 @@ import com.lmontev.restaurant.reservation.service.manager.reservation.dto.output
 import com.lmontev.restaurant.reservation.service.manager.reservation.dto.output.TableHourODTO;
 import com.lmontev.restaurant.reservation.service.manager.reservation.impl.ReservationManagerImpl;
 import com.lmontev.restaurant.reservation.service.manager.reservation.transfomer.ReservationManagerTransformer;
-import org.aspectj.weaver.ast.Not;
 import org.instancio.Instancio;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -28,8 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -145,9 +142,88 @@ public class ReservationManagerTest {
         assertThrows(NotAvailableTableException.class, () -> {
             manager.reserveTable(reservationControllerIDTO);
         });
+    }
 
+    @Test
+    public void shouldGetReservationByID(){
+        //given
+        final Long RESERVATION_ID = 1l;
+        final ReservationIntegrationIDTO reservation = mock(ReservationIntegrationIDTO.class);
+        final ReservationODTO reservationODTO = mock(ReservationODTO.class);
+        when(transformer.toODTO(reservation)).thenReturn(reservationODTO);
+        when(reservationIntegration.findReservationById(RESERVATION_ID)).thenReturn(reservation);
 
+        //when
+        final ReservationODTO actual = manager.getReservationById(RESERVATION_ID);
 
+        //then
+        final InOrder inOrder = inOrder(transformer, reservationIntegration);
+        inOrder.verify(reservationIntegration).findReservationById(RESERVATION_ID);
+        inOrder.verify(transformer).toODTO(reservation);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shouldEditTable(){
+        //given
+        final ReservationControllerIDTO reservationControllerIDTO = mock(ReservationControllerIDTO.class);
+        final RestaurantTableODTO restaurantTableODTO = mock(RestaurantTableODTO.class);
+        final LocalDate date = Instancio.of(LocalDate.class).create();
+        final List<LocalTime> availableHours = Instancio.ofList(LocalTime.class).size(3).create();
+        final RestaurantTableIDTO restaurantTableIDTO = mock(RestaurantTableIDTO.class);
+        final ReservationIntegrationIDTO reservationIntegrationIDTO = mock(ReservationIntegrationIDTO.class);
+        final ReservationODTO reservationODTO = mock(ReservationODTO.class);
+        when(reservationControllerIDTO.getDate()).thenReturn(date);
+        when(reservationControllerIDTO.getTime()).thenReturn(availableHours.get(0));
+        when(transformer.toODTO(reservationIntegrationIDTO))
+                .thenReturn(reservationODTO);
+        when(reservationIntegration.editReservation(reservationControllerIDTO))
+                .thenReturn(reservationIntegrationIDTO);
+        when(transformer.toReservationTableIDTO(restaurantTableODTO))
+                .thenReturn(restaurantTableIDTO);
+        when(hoursManager.getAllAvailableHours()).thenReturn(availableHours);
+        when(reservationIntegration
+                .findReservationsByDate(reservationControllerIDTO.getDate()))
+                .thenReturn(Collections.emptyList());
+        when(reservationControllerIDTO.getQuantity()).thenReturn(2L);
+        when(tablesIntegration
+                .findTablesByQuantity(reservationControllerIDTO.getQuantity()))
+                .thenReturn(Collections.singletonList(restaurantTableODTO));
+
+        //when
+        final ReservationODTO actual = manager.editReservation(reservationControllerIDTO);
+
+        //then
+        final InOrder inOrder = inOrder(tablesIntegration, hoursManager, reservationIntegration, transformer);
+        inOrder.verify(tablesIntegration).findTablesByQuantity(reservationControllerIDTO.getQuantity());
+        inOrder.verify(reservationIntegration).findReservationsByDate(reservationControllerIDTO.getDate());
+        inOrder.verify(hoursManager).getAllAvailableHours();
+        inOrder.verify(transformer).toReservationTableIDTO(restaurantTableODTO);
+        inOrder.verify(reservationIntegration).editReservation(reservationControllerIDTO);
+        inOrder.verify(transformer).toODTO(reservationIntegrationIDTO);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shouldGetReservationByDate(){
+        //given
+        final ReservationsByDateIDTO reservationsByDateIDTO = mock(ReservationsByDateIDTO.class);
+        final ReservationIntegrationIDTO reservationIntegrationIDTO  = mock(ReservationIntegrationIDTO.class);
+        final LocalDate date = Instancio.of(LocalDate.class).create();
+        final ReservationODTO reservationODTO = mock(ReservationODTO.class);
+        when(reservationsByDateIDTO.getDate()).thenReturn(date);
+        when(transformer.toODTO(reservationIntegrationIDTO)).thenReturn(reservationODTO);
+        when(reservationIntegration.findReservationsByDate(reservationsByDateIDTO.getDate()))
+                .thenReturn(Collections.singletonList(reservationIntegrationIDTO));
+
+        //when
+        final List<ReservationODTO> actual = manager.getReservationsByDate(reservationsByDateIDTO);
+
+        //then
+        final InOrder inOrder = inOrder(transformer, reservationIntegration);
+        inOrder.verify(reservationIntegration).findReservationsByDate(reservationsByDateIDTO.getDate());
+        inOrder.verify(transformer).toODTO(reservationIntegrationIDTO);
+        inOrder.verifyNoMoreInteractions();
     }
     private boolean findTable(TableHourODTO table, Long id) {
         return table.getTable().getId() == id;
