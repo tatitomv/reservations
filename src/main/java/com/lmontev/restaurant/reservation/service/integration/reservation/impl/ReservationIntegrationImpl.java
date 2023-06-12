@@ -26,9 +26,6 @@ public class ReservationIntegrationImpl implements ReservationIntegration {
     @Autowired
     private ReservationIntegrationTransformer transformer;
 
-    @Autowired
-    private RestaurantTableIntegration restaurantTableIntegration;
-
     @Override
     public List<ReservationIntegrationIDTO> findReservationsByDate(LocalDate date) {
         final List<ReservationMO> reservations = repository.findByDate(date);
